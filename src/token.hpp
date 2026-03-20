@@ -15,6 +15,7 @@ namespace aegis {
 
         // Keywords
         Fun,
+        Print,
         // Access rights
         Wtr, // writer
         Rdr, // reader
@@ -26,6 +27,7 @@ namespace aegis {
         // Literals and identifiers
         Identifier, // Variable names and function names
         Number,     // number
+        String,     // string
 
         // Special
         Eof,        // End of file
