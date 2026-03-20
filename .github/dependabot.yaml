@@ -1,12 +1,7 @@
 version: 2
 updates:
   # 1. GitHub Actions Update (Ensuring CI/CD Security)
-  - package-ecosystem: "CI"
+  - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-  # 2. Updating the C/C++ package manager
-  - package-ecosystem: "cmake"
-    directory: "/"
-    schedule:
-      interval: "daily"
