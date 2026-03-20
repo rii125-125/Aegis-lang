@@ -17,10 +17,10 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
 endforeach()
 
 # Specify the name of the executable file and the source files to include in the build
-add_executable(aegis
+add_executable(main
     src/main.cpp
     src/ast/lexer.cpp
 )
 
 # Specifying the include path (where to look for header files)
-target_include_directories(aegis PRIVATE src)
+target_include_directories(main PRIVATE src)
