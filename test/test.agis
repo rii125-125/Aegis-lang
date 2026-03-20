@@ -1,0 +1,4 @@
+fun main() {
+    wtr x = 10;
+    print("Hello Aegis!");
+}

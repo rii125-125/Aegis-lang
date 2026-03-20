@@ -1,29 +1,41 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <vector>
 #include <string>
 #include "ast/lexer.hpp"
 #include "token.hpp"
 
-int main() {
-    // Test code
-    std::string_view source =
-        "fun main() {\n"
-        "    wtr x = 10;\n"
-        "    print \"Hello, Aegis!\";\n"
-        "}";
+int main(int argc, char* argv[]) {
+    // Receive the file path from the command-line arguments
+    if (argc < 2) {
+        std::cerr << "Usage: aegis <source_file.agis>" << std::endl;
+        return 1;
+    }
 
-    std::cout << "--- Scanning Code ---" << std::endl;
-    std::cout << source << std::endl;
-    std::cout << "---------------------" << std::endl;
+    std::string file_path = argv[1];
+    std::ifstream file(file_path);
 
-    aegis::Lexer lexer(source);
-    std::vector <aegis::Token> tokens = lexer.tokenize();
+    if (!file.is_open()) {
+        std::cerr << "Could not open file: " << file_path << std::endl;
+        return 1;
+    }
+
+    // Read the entire contents of the file as a string
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string source_code = buffer.str();
+
+    std::cout << "--- Reading: " << file_path << " ---" << std::endl;
+
+    // Pass to the lexer
+    aegis::Lexer lexer(source_code);
+    auto tokens = lexer.tokenize();
 
     for (const auto& token : tokens) {
-        std::cout << "Line" << token.line << "|";
-        // Display a number using TokenType
-        std::cout << "Type: " << static_cast<int>(token.type) << "|";
-        std::cout << "Literal: [" << token.literal << "]" << std::endl;
+        std::cout << "Line " << token.line << " | "
+                  << "Type: " << static_cast<int>(token.type) << " | "
+                  << "Literal: [" << token.literal << "]" << std::endl;
     }
 
     return 0;
