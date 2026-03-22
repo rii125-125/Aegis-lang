@@ -1,4 +1,4 @@
 fun main() {
-    wtr x = 10;
-    print("Hello Aegis!");
+    print("Hello, Aegis!");
+    print("This is a functional print style.");
 }

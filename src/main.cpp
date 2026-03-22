@@ -2,41 +2,53 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <string>
 #include "ast/lexer.hpp"
-#include "token.hpp"
 
 int main(int argc, char* argv[]) {
-    // Receive the file path from the command-line arguments
     if (argc < 2) {
         std::cerr << "Usage: aegis <source_file.agis>" << std::endl;
         return 1;
     }
 
-    std::string file_path = argv[1];
-    std::ifstream file(file_path);
-
+    std::ifstream file(argv[1]);
     if (!file.is_open()) {
-        std::cerr << "Could not open file: " << file_path << std::endl;
+        std::cerr << "Could not open file: " << argv[1] << std::endl;
         return 1;
     }
 
-    // Read the entire contents of the file as a string
     std::stringstream buffer;
     buffer << file.rdbuf();
     std::string source_code = buffer.str();
 
-    std::cout << "--- Reading: " << file_path << " ---" << std::endl;
-
-    // Pass to the lexer
     aegis::Lexer lexer(source_code);
     auto tokens = lexer.tokenize();
 
-    for (const auto& token : tokens) {
-        std::cout << "Line " << token.line << " | "
-                  << "Type: " << static_cast<int>(token.type) << " | "
-                  << "Literal: [" << token.literal << "]" << std::endl;
+    std::cout << "--- Executing Aegis ---" << std::endl;
+
+    for (size_t i = 0; i < tokens.size(); ++i) {
+        // 1. 'print' を見つける
+        if (tokens[i].type == aegis::TokenType::Print) {
+            
+            // 2. 次が '(' であることを確認
+            if (i + 1 < tokens.size() && tokens[i + 1].type == aegis::TokenType::LParen) {
+                
+                // 3. その次が "文字列" であることを確認
+                if (i + 2 < tokens.size() && tokens[i + 2].type == aegis::TokenType::String) {
+                    
+                    // 4. その次が ')' であることを確認
+                    if (i + 3 < tokens.size() && tokens[i + 3].type == aegis::TokenType::RParen) {
+                        
+                        // 実行！
+                        std::cout << tokens[i + 2].literal << std::endl;
+                        
+                        // 解析した分（( "text" )）だけインデックスを進める
+                        i += 3; 
+                    }
+                }
+            }
+        }
     }
 
+    std::cout << "-----------------------" << std::endl;
     return 0;
 }
