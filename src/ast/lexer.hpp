@@ -1,31 +1,51 @@
-#pragma once
-#include "token.hpp"
+#ifndef AEGIS_LEXER_HPP
+#define AEGIS_LEXER_HPP
+
+#include "../token.hpp"
+#include <string>
 #include <vector>
-#include <string_view>
+#include <map>
 
-namespace aegis {
+namespace aegis
+{
+    class Lexer
+    {
+    public:
+        // ソースコードを注入して初期化
+        Lexer(const std::string &source);
 
-class Lexer {
-public:
-    explicit Lexer(std::string_view source);
+        // すべてのトークンを解析して返却
+        std::vector<Token> scanTokens();
 
-    // 全てのトークンを解析してリストで返す
-    std::vector<Token> tokenize();
+    private:
+        std::string source;
+        std::vector<Token> tokens;
 
-private:
-    std::string_view source_;
-    size_t cursor_ = 0; // 現在読み込んでいる位置
-    int line_ = 1;      // 現在の行番号（エラー表示用）
+        // 解析状態
+        int start = 0;
+        int current = 0;
+        int line = 1;
 
-    // ユーティリティ関数
-    char peek() const;      // 次の文字を見る
-    char advance();         // 一文字進めて、その文字を返す
-    bool is_at_end() const; // 最後まで読んだか
-    void skip_whitespace(); // 空白や改行を飛ばす
+        // 予約語の検索用マップ
+        static const std::map<std::string, TokenType> keywords;
 
-    Token make_token(TokenType type, std::string_view literal);
-    Token scan_identifier(); // 英数字（キーワード含む）を解析
-    Token scan_string();     // 文字列リテラルを解析
-};
+        // ヘルパー
+        bool isAtEnd();
+        char advance();
+        char peek();
+        char peekNext();
+        bool match(char expencted);
 
-} // namespace aegis
+        // トークン作成
+        void scanToken();
+        void addToken(TokenType type);
+        void addToken(TokenType type, std::string lexeme);
+
+        // パターンマッチング
+        void identifier();
+        void number();
+        void stringLiteral();
+    }
+}
+
+#endif
