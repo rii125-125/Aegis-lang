@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var version string = "0.3.0"
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "Aegis-lang",
@@ -25,7 +27,8 @@ to quickly create a Cobra application.`,
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
 	Run: func(cmd *cobra.Command, args []string) {
-    	fmt.Println("Hello! Aegis!")
+    	fmt.Println("Hello! Aegis!\n-------------")
+		fmt.Println("Version" + version)
 	},
 }
 
