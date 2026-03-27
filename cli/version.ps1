@@ -2,7 +2,7 @@ $owner = "rii125-125"
 $repo = "Aegis-lang"
 $url = "https://api.github.com/repos/$owner/$repo/releases/latest"
 
-$outPutFile = "lasted_version.txt"
+$outPutFile = "../test/lasted_version.txt"
 
 try {
     $release = Invoke-RestMethod -Uri $url
