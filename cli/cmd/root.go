@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var version string = "0.3.0"
+var ver string = "0.3.0"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -21,7 +21,7 @@ var rootCmd = &cobra.Command{
 > A language that makes type safety and robust code more intuitive and easier to understand.`,
 	Run: func(cmd *cobra.Command, args []string) {
     	fmt.Println("Hello! Aegis!\n-------------")
-		fmt.Println("Version" + version)
+		fmt.Println("Version" + ver)
 	},
 }
 
@@ -35,14 +35,6 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.Aegis-lang.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
