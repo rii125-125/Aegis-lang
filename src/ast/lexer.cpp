@@ -29,37 +29,68 @@ namespace aegis {
     Lexer::Lexer(const std::string& source) : source(source) {}
 
     std::vector<Token> Lexer::scanTokens() {
-        while (peek() != '"' && !isAtEnd()) {
-            if(peek() == '\n') { line++ };
-            advance();
+        while (!isAtEnd()) {
+            start = current;
+            scanToken(); // ここで各トークンを解析
         }
 
         tokens.push_back({TokenType::END_OF_FILE, "", line});
         return tokens;
     }
 
+    // 各文字を判定するコアメソッドを追加
+    void Lexer::scanToken() {
+        char c = advance();
+        switch (c) {
+            case '(': addToken(TokenType::L_PAREN); break;
+            case ')': addToken(TokenType::R_PAREN); break;
+            case '{': addToken(TokenType::L_BRACE); break;
+            case '}': addToken(TokenType::R_BRACE); break;
+            case '[': addToken(TokenType::L_BRACKET); break;
+            case ']': addToken(TokenType::R_BRACKET); break;
+            case ':': addToken(TokenType::COLON); break;
+            case ';': addToken(TokenType::SEMICOLON); break;
+            case ',': addToken(TokenType::COMMA); break;
+            case '.': addToken(TokenType::DOT); break;
+            case '*': addToken(TokenType::ASTERISK); break;
+            case '=': addToken(match('=') ? TokenType::EQ : TokenType::ASSIGN); break;
+            case '#': if (match('=')) addToken(TokenType::MAGIC_ASSIGN); break;
+            case '$': identifier(); break; // $detach用
+            case '@': addToken(TokenType::ANNOTATION); break;
+            case ' ':
+            case '\r':
+            case '\t': break;
+            case '\n': line++; break;
+            case '"': stringLiteral(); break;
+            default:
+                if (isdigit(c)) {
+                    number();
+                } else if (isalpha(c) || c == '_') {
+                    identifier();
+                } else {
+                    addToken(TokenType::UNKNOWN);
+                }
+                break;
+        }
+    }
+
     void Lexer::stringLiteral() {
         while (peek() != '"' && !isAtEnd()) {
-            if(peek() == '\n') { line++ };
+            if(peek() == '\n') line++;
             advance();
         }
+        if(isAtEnd()) return;
+        advance(); // 閉じの "
 
-        if(isAtEnd()) {
-            return;
-        }
-
-        advance();
-
-        std::string value = source.substr(start + 1, current -start -2);
+        std::string value = source.substr(start + 1, current - start - 2);
         addToken(TokenType::STRING_LITERAL, value);
     }
 
     void Lexer::number() {
-        while (isdigit(peek())) { advance() };
-
+        while (isdigit(peek())) advance();
         if(peek() == '.' && isdigit(peekNext())) {
             advance();
-            while (isdigit(peek)) { advance() };
+            while (isdigit(peek())) advance(); // peek() に修正
             addToken(TokenType::FLOAT_LITERAL);
         } else {
             addToken(TokenType::INT_LITERAL);
@@ -67,15 +98,14 @@ namespace aegis {
     }
 
     void Lexer::identifier() {
-        while(isalnum(peek()) || peek() == '_' || peek() == '.') { advance() };
-
+        while(isalnum(peek()) || peek() == '_' || peek() == '.') advance();
         std::string text = source.substr(start, current - start);
 
         if (text == "error.return") {
             addToken(TokenType::ERROR_RETURN);
             return;
         }
-        if (text = "$detach") {
+        if (text == "$detach") { // == に修正
             addToken(TokenType::DETACH);
             return;
         }
@@ -85,40 +115,22 @@ namespace aegis {
         if (it != keywords.end()) {
             type = it->second;
         }
-
         addToken(type);
     }
 
-    bool Lexer::isAtEnd() {
-    return current >= source.length();
-    }
-
-    char Lexer::advance() {
-        return source[current++];
-    }
-
-    char Lexer::peek() {
-        if (isAtEnd()) return '\0';
-        return source[current];
-    }
-
-    char Lexer::peekNext() {
-        if (current + 1 >= source.length()) return '\0';
-        return source[current + 1];
-    }
-
+    // --- 以下、ヘルパーメソッドは変更なし ---
+    bool Lexer::isAtEnd() { return current >= source.length(); }
+    char Lexer::advance() { return source[current++]; }
+    char Lexer::peek() { return isAtEnd() ? '\0' : source[current]; }
+    char Lexer::peekNext() { return (current + 1 >= source.length()) ? '\0' : source[current + 1]; }
     bool Lexer::match(char expected) {
-        if (isAtEnd()) return false;
-        if (source[current] != expected) return false;
+        if (isAtEnd() || source[current] != expected) return false;
         current++;
         return true;
     }
-
     void Lexer::addToken(TokenType type) {
-        std::string text = source.substr(start, current - start);
-        tokens.push_back({type, text, line});
+        tokens.push_back({type, source.substr(start, current - start), line});
     }
-
     void Lexer::addToken(TokenType type, std::string lexeme) {
         tokens.push_back({type, lexeme, line});
     }

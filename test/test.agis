@@ -1,4 +1,4 @@
 fun main() {
-    print("Hello, Aegis!");
-    print("This is a functional print style.");
-}
+    string name: vlt = "Aegis";
+    print(name);
+} $detach

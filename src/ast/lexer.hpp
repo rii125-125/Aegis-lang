@@ -45,7 +45,7 @@ namespace aegis
         void identifier();
         void number();
         void stringLiteral();
-    }
+    };
 }
 
 #endif

@@ -62,7 +62,7 @@ namespace aegis {
         RDR, // reader
         LCK, // lock
         VLT, // vault
-        WLT, // write_limited
+        WTL, // write_limited
         RDL, // read_limited
 
         // リテラル・識別子
