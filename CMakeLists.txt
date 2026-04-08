@@ -20,6 +20,8 @@ endforeach()
 add_executable(main
     src/main.cpp
     src/ast/lexer.cpp
+    src/syntax/parser.cpp
+    src/runtime/interpreter.cpp
 )
 
 # Specifying the include path (where to look for header files)
