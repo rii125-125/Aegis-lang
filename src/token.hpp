@@ -43,7 +43,6 @@ namespace aegis {
 
         // キーワード
         FUN, // fun
-        MAIN, // main
         IF, // if
         ELSE, // else
         FOR, // for

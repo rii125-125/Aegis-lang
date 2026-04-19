@@ -5,7 +5,6 @@ namespace aegis {
 
     const std::map<std::string, TokenType> Lexer::keywords = {
         {"fun", TokenType::FUN},
-        {"main", TokenType::MAIN},
         {"if", TokenType::IF},
         {"else", TokenType::ELSE},
         {"for", TokenType::FOR},
