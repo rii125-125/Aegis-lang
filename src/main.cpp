@@ -2,8 +2,11 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include "token.hpp"
+#include <memory>
+
 #include "ast/lexer.hpp"
+#include "./syntax/parser.hpp"
+#include "runtime/interpreter.hpp"
 
 /**
  * Aegis Compiler Entry Point
@@ -29,10 +32,24 @@ int main(int argc, char* argv[]) {
     aegis::Lexer lexer(source);
     std::vector<aegis::Token> tokens = lexer.scanTokens();
 
-    std::cout << "--- Tokens Scanned ---" << std::endl;
-    for (const auto& token : tokens) {
-        std::cout << "Line" << token.line << ": [" << (int)token.type << "] " << token.lexeme << std::endl;
+    aegis::Parser parser(tokens);
+    std::vector<std::unique_ptr<aegis::Stmt>> program;
+
+    try {
+        while (parser.peek().type != aegis::TokenType::END_OF_FILE) {
+            program.push_back(parser.declaration_to_node());
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Aegis Compile Error: " << e.what() << std::endl;
+        return 1;
     }
+
+    // ? Debug
+    std::cout << "Debug: Nodes parsed: " << program.size() << std::endl;
+
+    std::cout << "--- Execution Start ---" << std::endl;
+    aegis::Interpreter interpreter;
+    interpreter.interpret(program);
     std::cout << "----------------------" << std::endl;
 
     return 0;
